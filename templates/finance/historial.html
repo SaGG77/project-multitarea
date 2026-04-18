@@ -8,6 +8,7 @@
     <div class="d-flex gap-2">
       <a class="btn btn-outline-secondary" href="{{ url_for('finance.categories_index') }}">Categorías</a>
       <a class="btn btn-primary" href="{{ url_for('finance.transaction_new') }}">Nueva transacción</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('finance.dashboard') }}">Volver</a>
     </div>
   </div>
 
@@ -36,7 +37,7 @@
     </div>
 
     <div class="col-md-2">
-      <a class="btn btn-outline-secondary w-100" href="{{ url_for('finance.transactions_index') }}">Limpiar</a>
+      <a class="btn btn-outline-secondary w-100" href="{{ url_for('finance.transactions_history') }}">Limpiar</a>
     </div>
   </form>
 
@@ -55,7 +56,7 @@
             <td>{{ tx.date }}</td>
             <td>{% if tx.type == "expense"%}Gasto{% else %}Ingreso{% endif %}</td>
             <td>${{ format_cop(tx.amount) }}</td>
-            <td>{{ tx.categories_map.get(tx.category_id).name if categories_map.get(tx.category_id) else "Sin categoría" }}</td>
+            <td>{{ categories_map.get(category_id).name if categories_map.get(category_id) else "Sin categoría" }}</td>
             <td class="text-muted">{{ tx.notes or "" }}</td>
           </tr>
           {% endfor %}

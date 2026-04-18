@@ -1,18 +1,3 @@
-/*
-static/js/habits_charts.js
-
-Objetivo:
-- Un solo JS para TODOS los gráficos de hábitos.
-- Detecta si está en dashboard o detalle según existan elementos en el DOM.
-- Consume endpoints /api/... y renderiza con Chart.js.
-*/
-
-/**
- * fetchJson(url)
- * - Llama a una URL
- * - Devuelve JSON si todo sale bien
- * - Devuelve null si hay error (para no romper la UI)
- */
 async function fetchJson(url) {
   try {
     const response = await fetch(url);
@@ -24,7 +9,6 @@ async function fetchJson(url) {
 }
 
 /**
- * renderLineChart(canvas, labels, values)
  * - Gráfico de línea básico para tendencia.
  */
 function renderLineChart(canvas, labels, values) {
@@ -51,7 +35,6 @@ function renderLineChart(canvas, labels, values) {
 }
 
 /**
- * renderBarChart(canvas, labels, values, horizontal=false)
  * - Barras para top hábitos o consistencia por weekday.
  */
 function renderBarChart(canvas, labels, values, horizontal = false) {
@@ -73,9 +56,8 @@ function renderBarChart(canvas, labels, values, horizontal = false) {
 }
 
 /**
- * renderHeatmap(container, fromIso, toIso, completedDates)
- * - Crea cuadritos por día (simple y efectivo).
- * - Usamos DocumentFragment para no hacer 180 appends directos al DOM.
+ * - Crea cuadritos por día.
+ * - DocumentFragment para no hacer 180 appends directos al DOM.
  */
 function renderHeatmap(container, fromIso, toIso, completedDates) {
   // Set para lookup O(1)
@@ -90,11 +72,10 @@ function renderHeatmap(container, fromIso, toIso, completedDates) {
     const iso = d.toISOString().slice(0, 10);
 
     const box = document.createElement("div");
-    box.className = "habit-heatmap-cell"; // mejor que inline styles
+    box.className = "habit-heatmap-cell";
     box.dataset.date = iso;
     box.title = iso;
 
-    // Pintamos según completado
     if (completedSet.has(iso)) {
       box.classList.add("is-completed");
     }
@@ -102,13 +83,11 @@ function renderHeatmap(container, fromIso, toIso, completedDates) {
     frag.appendChild(box);
   }
 
-  // Limpiamos y pintamos de una
   container.innerHTML = "";
   container.appendChild(frag);
 }
 
 /**
- * initDashboardCharts()
  * - Se ejecuta solo si encuentra los canvas del dashboard
  */
 async function initDashboardCharts() {
@@ -132,7 +111,6 @@ async function initDashboardCharts() {
 }
 
 /**
- * initDetailCharts()
  * - Se ejecuta solo si encuentra elementos del detalle
  */
 async function initDetailCharts() {
@@ -142,7 +120,6 @@ async function initDetailCharts() {
 
   if (!seriesCanvas || !weekdayCanvas || !heatmapGrid) return;
 
-  // Habit id viene desde data-habit-id en el canvas
   const habitId = seriesCanvas.dataset.habitId;
   if (!habitId) return;
 
@@ -165,7 +142,6 @@ async function initDetailCharts() {
   }
 }
 
-// Entry point único
 (async function initHabitCharts() {
   await initDashboardCharts();
   await initDetailCharts();

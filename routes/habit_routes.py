@@ -1,20 +1,3 @@
-"""
-routes/habit_routes.py
-
-Este blueprint maneja TODO lo relacionado con hábitos:
-- Pantallas HTML:
-  - /habits (dashboard)
-  - /habits/new (crear)
-  - /habits/<id> (detalle)
-  - /habits/<id>/edit (editar)
-  - /habits/<id>/toggle_today (marcar/desmarcar hoy)
-- APIs JSON para gráficos (Chart.js):
-  - /api/habits/summary
-  - /api/habits/<id>/series
-  - /api/habits/<id>/heatmap
-  - /api/habits/by_weekday
-"""
-
 from datetime import date
 from flask import (
     Blueprint,
@@ -34,9 +17,6 @@ from models.habit_log import HabitLog
 from utils.auth import login_required
 
 # Importamos funciones "puras" para métricas:
-# Esto es excelente práctica porque:
-# - Tu blueprint queda más corto y legible
-# - Puedes testear métricas sin levantar Flask
 from utils.habit_metrics import (
     calculate_streaks,
     clamp_range_days,
@@ -59,10 +39,6 @@ habit_bp = Blueprint("habit", __name__)
 @habit_bp.route("/index", methods=["GET"])
 @login_required
 def index():
-    """
-    /index => redirige al dashboard real.
-    Esto sirve para mantener compatibilidad con tu app si antes entrabas por /index.
-    """
     return redirect(url_for("habit.habits"))
 
 
@@ -73,16 +49,8 @@ def index():
 @habit_bp.route("/habits", methods=["GET"])
 @login_required
 def habits():
-    """
-    Dashboard:
-    - lista hábitos del usuario
-    - calcula métricas por hábito (cards)
-    - calcula métricas globales (cards arriba)
-    - renderiza habits/dashboard.html
-    """
     user_id = session["user_id"]
 
-    # 1) Traemos los hábitos del usuario (para cards).
     habits = (
         Habit.query
         .filter_by(user_id=user_id)
@@ -90,13 +58,9 @@ def habits():
         .all()
     )
 
-    # 2) Por cada hábito calculamos:
-    # - racha actual / mejor racha
-    # - % últimos 7 días
-    # - si hoy está marcado
     habit_cards = []
     for habit in habits:
-        completed_dates = habit_completed_dates(habit.id)  # set[date] (idealmente)
+        completed_dates = habit_completed_dates(habit.id)
         current_streak, best_streak = calculate_streaks(completed_dates)
 
         habit_cards.append(

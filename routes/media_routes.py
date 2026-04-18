@@ -4,11 +4,11 @@ from decimal import Decimal
 from datetime import datetime
 # PROPIO
 from utils.auth import login_required
-from forms import MediaForm
+from forms import MediaForm, DeleteForm
 # BASES DE DATOS
 from models.media_item import MediaItem
 from extensions import db
-#Ted, eres especial, pudsite ser una inspiracion para el mundo , ser un lider, un ejemplo a seguir, y un lugar de eso eres
+
 media_bp = Blueprint("media", __name__, url_prefix="/media")
 
 @media_bp.route("/")
@@ -16,7 +16,8 @@ media_bp = Blueprint("media", __name__, url_prefix="/media")
 def index():
     user_id = session["user_id"]
     items = MediaItem.query.filter_by(user_id=user_id).all()
-    return render_template("media/index.html", items=items)
+    delete_form = DeleteForm()
+    return render_template("media/index.html", items=items, delete_form=delete_form)
 
 @media_bp.route("/new", methods=["GET", "POST"])
 @login_required
@@ -52,14 +53,19 @@ def new():
 @media_bp.route("/<int:item_id>/delete", methods=["POST"])
 @login_required
 def delete(item_id):
-    user_id = session["user_id"]
+    delete_form = DeleteForm()
 
-    item = MediaItem.query.filter_by(id=item_id, user_id=user_id).first_or_404()
+    if delete_form.validate_on_submit():
+        user_id = session["user_id"]
+        item = MediaItem.query.filter_by(id=item_id, user_id=user_id).first_or_404()
 
-    db.session.delete(item)
-    db.session.commit()
+        db.session.delete(item)
+        db.session.commit()
 
-    flash("Registro eliminado", "success")
+        flash("Registro eliminado", "success")
+    else:
+        flash("Solicitud inválida","danger")
+
     return redirect(url_for("media.index"))
 
 @media_bp.route("/<int:item_id>/edit", methods=["GET", "POST"])
@@ -68,7 +74,7 @@ def edit(item_id):
     user_id = session["user_id"]
     item = MediaItem.query.filter_by(id=item_id, user_id=user_id).first_or_404()
 
-    form = MediaForm(obj=item)  # 👈 precarga con lo que ya existe
+    form = MediaForm(obj=item)  # precarga con lo que ya existe
 
     if form.validate_on_submit():
         item.title = form.title.data.strip()

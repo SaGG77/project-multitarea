@@ -93,6 +93,9 @@ class MediaForm(FlaskForm):
 
     submit = SubmitField("Guardar")
 
+class DeleteForm(FlaskForm):
+    pass
+
 # --------------------------------------- HABITOS ---------------------------------------
 class HabitForm(FlaskForm):
     name                = StringField('Nombre', validators=[DataRequired(), Length(max=120)])

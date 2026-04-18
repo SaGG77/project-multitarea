@@ -23,10 +23,8 @@ finance_bp = Blueprint("finance", __name__)
 def dashboard():
     user_id = session["user_id"]
 
-    # rango: últimos 30 días (puedes cambiarlo luego)
     start = date.today() - timedelta(days=29)
 
-    # Totales últimos 30 días
     income_total = (
         db.session.query(func.coalesce(func.sum(Transaction.amount), 0))
         .filter(Transaction.user_id == user_id, Transaction.type == "income", Transaction.date >= start)
@@ -62,13 +60,13 @@ def dashboard():
 # -------------------------
 # LISTADO / HISTORIAL
 # -------------------------
-@finance_bp.route("/finance/transactions")
+@finance_bp.route("/historial")
 @login_required
-def transactions_index():
+def transactions_history():
     user_id = session["user_id"]
 
-    q_type = request.args.get("type", "").strip()          # income/expense o vacío
-    q_category = request.args.get("category_id", "").strip()  # id o vacío
+    q_type = request.args.get("type", "").strip()
+    q_category = request.args.get("category_id", "").strip()
 
     query = Transaction.query.filter_by(user_id=user_id)
 
@@ -88,7 +86,7 @@ def transactions_index():
     categories_map = {c.id: c for c in categories}
 
     return render_template(
-        "finance/index.html",
+        "finance/historial.html",
         transactions=transactions,
         categories=categories,
         categories_map=categories_map,
@@ -107,8 +105,6 @@ def transaction_new():
     user_id = session["user_id"]
     form = TransactionForm()
 
-    # Llenar dropdown de categorías (solo del usuario).
-    # Si quieres filtrar por tipo, más abajo te dejo el upgrade.
     categories = (
         Category.query.filter_by(user_id=user_id)
         .order_by(Category.kind.asc(), Category.name.asc())
@@ -139,7 +135,7 @@ def transaction_new():
         db.session.commit()
 
         flash("Transacción guardada.", "success")
-        return redirect(url_for("finance.transactions_index"))
+        return redirect(url_for("finance.transactions_history"))
 
     return render_template("finance/new.html", form=form)
 
