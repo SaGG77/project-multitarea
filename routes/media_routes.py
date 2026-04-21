@@ -1,11 +1,11 @@
-# LIBRERIAS
+
 from flask import Blueprint, render_template, session, request, flash, redirect, url_for
 from decimal import Decimal
 from datetime import datetime
-# PROPIO
+
 from utils.auth import login_required
 from forms import MediaForm, DeleteForm
-# BASES DE DATOS
+
 from models.media_item import MediaItem
 from extensions import db
 

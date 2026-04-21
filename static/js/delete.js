@@ -1,5 +1,3 @@
-// static/js/delete.js
-
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("form.js-delete-form").forEach((form) => {
         form.addEventListener("submit", async  (e) => {

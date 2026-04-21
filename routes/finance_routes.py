@@ -18,42 +18,30 @@ finance_bp = Blueprint("finance", __name__)
 # -------------------------
 # DASHBOARD
 # -------------------------
+def calculate_finance_summary(transactions):
+    total_income = sum(t.amount for t in transactions if t.type == "income")
+    total_expense = sum(t.amount for t in transactions if t.type == "expense")
+    balance = total_income - total_expense
+    savings_rate = (balance / total_income * 100) if total_income > 0 else 0
+
+    return {
+        "total_income": total_income,
+        "total_expense": total_expense,
+        "balance": balance,
+        "savings_rate": savings_rate
+    }
+
+
 @finance_bp.route("/finance")
 @login_required
-def dashboard():
-    user_id = session["user_id"]
-
-    start = date.today() - timedelta(days=29)
-
-    income_total = (
-        db.session.query(func.coalesce(func.sum(Transaction.amount), 0))
-        .filter(Transaction.user_id == user_id, Transaction.type == "income", Transaction.date >= start)
-        .scalar()
-    )
-    expense_total = (
-        db.session.query(func.coalesce(func.sum(Transaction.amount), 0))
-        .filter(Transaction.user_id == user_id, Transaction.type == "expense", Transaction.date >= start)
-        .scalar()
-    )
-
-    balance = int(income_total) - int(expense_total)
-
-    # Últimas 10 transacciones
-    last_transactions = (
-        Transaction.query
-        .filter_by(user_id=user_id)
-        .order_by(Transaction.date.desc(), Transaction.id.desc())
-        .limit(10)
-        .all()
-    )
+def transacctions_dashboard():
+    transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+    summary = calculate_finance_summary(transactions)
 
     return render_template(
         "finance/dashboard.html",
-        income_total=format_cop(int(income_total)),
-        expense_total=format_cop(int(expense_total)),
-        balance=format_cop(balance),
-        last_transactions=last_transactions,
-        format_cop=format_cop,
+        transactions=transactions,
+        **summary
     )
 
 
@@ -62,7 +50,7 @@ def dashboard():
 # -------------------------
 @finance_bp.route("/historial")
 @login_required
-def transactions_history():
+def history():
     user_id = session["user_id"]
 
     q_type = request.args.get("type", "").strip()
@@ -135,7 +123,7 @@ def transaction_new():
         db.session.commit()
 
         flash("Transacción guardada.", "success")
-        return redirect(url_for("finance.transactions_history"))
+        return redirect(url_for("finance.history"))
 
     return render_template("finance/new.html", form=form)
 

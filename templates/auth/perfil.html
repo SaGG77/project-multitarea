@@ -7,10 +7,32 @@
 
 {% block content %}
 <div class="username-banner text-center mb-5">
-  <h1 class="display-4 fw-bold mb-1">
+  <h1 class="display-4 fw-bold mb-1 mt-3">
     {{ user.nombre }}
   </h1>
   <p class="lead">Bienvenido a tu panel de usuario</p>
+</div>
+
+<div class="row justify-content-center align-items-center">
+  <div class="col-md-4">
+    <div class="p-5 border rounded-3">
+      <h2>¿No te gusta el color por defecto?</h2>
+      <p>
+        Aqui abajo lo puedes cambiar, y ¡seleccionar tu color favorito!
+      </p>
+        <input type="color" class="form-control form-control-color" id="ColorToggle" value="#563d7c" title="Elige tu color favorito">
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="p-5 border rounded-3">
+      <h2>¡También tenemos un modo oscuro!</h2>      
+      <p>Solo dale un toque al botón de abajo</p>  
+        <button class="btn btn-sm btn-outline-secondary themeToggle" type="button" aria-label="Cambiar tema">
+            <i class="bi bi-moon-stars"> Cambiar modo</i>
+        </button>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

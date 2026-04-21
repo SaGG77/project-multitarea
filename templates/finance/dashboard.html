@@ -9,8 +9,9 @@
       <small class="text-muted">Resumen últimos 30 días</small>
     </div>
     <div class="d-flex gap-2">
-      <a class="btn btn-outline-secondary" href="{{ url_for('finance.transactions_history') }}">Ver historial</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('finance.history') }}">Ver historial</a>
       <a class="btn btn-primary" href="{{ url_for('finance.transaction_new') }}">Nueva transacción</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('finance.categories_index') }}">Ver categorías</a>
     </div>
   </div>
 
@@ -31,6 +32,10 @@
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">Últimas transacciones</h5>
+                {% set labels_type = {
+                'income': 'Ingreso',
+                'expense': 'Gasto'
+                } %}
       {% if last_transactions %}
       <div class="table-responsive">
         <table class="table mb-0">

@@ -16,7 +16,6 @@ from models.habit import Habit
 from models.habit_log import HabitLog
 from utils.auth import login_required
 
-# Importamos funciones "puras" para métricas:
 from utils.habit_metrics import (
     calculate_streaks,
     clamp_range_days,
@@ -31,10 +30,7 @@ from utils.habit_metrics import (
 
 habit_bp = Blueprint("habit", __name__)
 
-
-# -----------------------------
 # RUTAS "NAVEGACIÓN"
-# -----------------------------
 
 @habit_bp.route("/index", methods=["GET"])
 @login_required
@@ -73,9 +69,6 @@ def habits():
             }
         )
 
-    # 3) Métricas globales:
-    # - racha global (si tu función lo define así)
-    # - % de cumplimiento 7 y 30 días
     current_streak, best_streak = global_streaks(user_id)
 
     return render_template(
@@ -95,10 +88,6 @@ def habits():
 @habit_bp.route("/habits/new", methods=["GET", "POST"])
 @login_required
 def new_habit():
-    """
-    GET  -> muestra el formulario
-    POST -> valida y crea el hábito
-    """
     user_id = session["user_id"]
     form = HabitForm()
 
@@ -125,20 +114,15 @@ def new_habit():
 @habit_bp.route("/habits/<int:habit_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_habit(habit_id):
-    """
-    GET  -> muestra el formulario con datos del hábito
-    POST -> guarda cambios
-    """
     user_id = session["user_id"]
 
     habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first_or_404()
-    form = HabitForm(obj=habit)  # precarga el formulario con el objeto
+    form = HabitForm(obj=habit)
 
     if form.validate_on_submit():
         # populate_obj copia los campos del form al modelo automáticamente.
         form.populate_obj(habit)
 
-        # Limpieza: siempre guardamos el nombre sin espacios al inicio/final.
         habit.name = habit.name.strip()
 
         db.session.commit()
@@ -155,14 +139,6 @@ def edit_habit(habit_id):
 @habit_bp.route("/habits/<int:habit_id>/toggle_today", methods=["POST"])
 @login_required
 def toggle_today(habit_id):
-    """
-    Toggle:
-    - si existe log hoy => lo borra (desmarcar)
-    - si NO existe => lo crea (marcar)
-
-    Nota: esto funciona BIEN si tienes constraint único (habit_id, log_date)
-    en tu tabla habits_logs para evitar duplicados.
-    """
     user_id = session["user_id"]
     habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first_or_404()
 
@@ -174,8 +150,6 @@ def toggle_today(habit_id):
         db.session.delete(existing_log)
         flash(f"Quitaste la marca de hoy para '{habit.name}'", "warning")
     else:
-        # completed=True y minutes=0: depende de tu modelo,
-        # pero lo dejamos como tu intención original.
         db.session.add(
             HabitLog(
                 habit_id=habit.id,
@@ -188,12 +162,10 @@ def toggle_today(habit_id):
 
     db.session.commit()
 
-    # Si el form manda "next", volvemos a donde estaba el usuario.
     next_url = request.form.get("next")
     if next_url:
         return redirect(next_url)
 
-    # Si no hay next, vamos al detalle del hábito.
     return redirect(url_for("habit.habit_detail", habit_id=habit.id))
 
 
@@ -233,11 +205,6 @@ def habit_detail(habit_id):
 @habit_bp.route("/api/habits/summary", methods=["GET"])
 @login_required
 def habits_summary_api():
-    """
-    Devuelve datos globales para el dashboard:
-    - series diario (labels/values) para tendencia
-    - top hábitos (ej: % 30 días)
-    """
     user_id = session["user_id"]
 
     # clamp_range_days evita que alguien pida 99999 días y reviente la app.
@@ -248,8 +215,8 @@ def habits_summary_api():
     return jsonify(
         {
             "range": range_days,
-            "series": payload["series"],  # {labels: [...], values: [...]}
-            "habits": payload["habits"],  # [{name, value}, ...]
+            "series": payload["series"],
+            "habits": payload["habits"],
         }
     )
 
@@ -257,11 +224,6 @@ def habits_summary_api():
 @habit_bp.route("/api/habits/<int:habit_id>/series", methods=["GET"])
 @login_required
 def habit_series_api(habit_id):
-    """
-    Serie del hábito:
-    labels: fechas ISO
-    values: 1 si completó ese día, 0 si no
-    """
     user_id = session["user_id"]
     habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first_or_404()
 
@@ -286,11 +248,6 @@ def habit_series_api(habit_id):
 @habit_bp.route("/api/habits/<int:habit_id>/heatmap", methods=["GET"])
 @login_required
 def habit_heatmap_api(habit_id):
-    """
-    Heatmap:
-    - from/to: rango
-    - completed_dates: lista de fechas completadas dentro del rango
-    """
     user_id = session["user_id"]
     habit = Habit.query.filter_by(id=habit_id, user_id=user_id).first_or_404()
 
@@ -314,11 +271,6 @@ def habit_heatmap_api(habit_id):
 @habit_bp.route("/api/habits/by_weekday", methods=["GET"])
 @login_required
 def habits_by_weekday_api():
-    """
-    Consistencia por día de la semana.
-    labels: ["Lun","Mar",...]
-    values: [conteos...]
-    """
     user_id = session["user_id"]
     range_days = clamp_range_days(int(request.args.get("range", 90)))
 

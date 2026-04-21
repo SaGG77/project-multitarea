@@ -8,7 +8,7 @@
     <div class="d-flex gap-2">
       <a class="btn btn-outline-secondary" href="{{ url_for('finance.categories_index') }}">Categorías</a>
       <a class="btn btn-primary" href="{{ url_for('finance.transaction_new') }}">Nueva transacción</a>
-      <a class="btn btn-outline-secondary" href="{{ url_for('finance.dashboard') }}">Volver</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('finance.transacctions_dashboard') }}">Volver</a>
     </div>
   </div>
 
@@ -37,7 +37,7 @@
     </div>
 
     <div class="col-md-2">
-      <a class="btn btn-outline-secondary w-100" href="{{ url_for('finance.transactions_history') }}">Limpiar</a>
+      <a class="btn btn-outline-secondary w-100" href="{{ url_for('finance.history') }}">Limpiar</a>
     </div>
   </form>
 

@@ -60,7 +60,6 @@ function renderBarChart(canvas, labels, values, horizontal = false) {
  * - DocumentFragment para no hacer 180 appends directos al DOM.
  */
 function renderHeatmap(container, fromIso, toIso, completedDates) {
-  // Set para lookup O(1)
   const completedSet = new Set(completedDates);
 
   const from = new Date(`${fromIso}T00:00:00`);

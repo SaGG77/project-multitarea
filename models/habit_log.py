@@ -8,12 +8,10 @@ class HabitLog(db.Model):
 
     habit_id = db.Column(db.Integer, db.ForeignKey("habits.id"), nullable=False, index=True)
 
-    # Fecha del registro
     log_date = db.Column(db.Date, nullable=False, index=True)
     completed = db.Column(db.Boolean, default=False, nullable=True)
     minutes = db.Column(db.Integer, nullable=False)
 
-    # Timestamp de creación
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     __table_args__ = (
