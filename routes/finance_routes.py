@@ -35,12 +35,14 @@ def calculate_finance_summary(transactions):
 @finance_bp.route("/finance")
 @login_required
 def transacctions_dashboard():
-    transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+    user_id = session["user_id"]
+    transactions = Transaction.query.filter_by(user_id=user_id).order_by(Transaction.date.desc()).all()
     summary = calculate_finance_summary(transactions)
 
     return render_template(
         "finance/dashboard.html",
         transactions=transactions,
+        format_cop=format_cop,
         **summary
     )
 

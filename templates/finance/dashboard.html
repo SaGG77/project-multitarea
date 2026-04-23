@@ -17,48 +17,53 @@
 
   <div class="row g-3 mb-4">
     <div class="col-md-4"><div class="card h-100"><div class="card-body">
-      <small class="text-muted">Ingresos</small><h3 class="mb-0">${{ income_total }}</h3>
+      <small class="text-muted">Ingresos</small><h3 class="mb-0">${{ format_cop(total_income) }}</h3>
     </div></div></div>
 
     <div class="col-md-4"><div class="card h-100"><div class="card-body">
-      <small class="text-muted">Gastos</small><h3 class="mb-0">${{ expense_total }}</h3>
+      <small class="text-muted">Gastos</small><h3 class="mb-0">${{ format_cop(total_expense) }}</h3>
     </div></div></div>
 
     <div class="col-md-4"><div class="card h-100"><div class="card-body">
-      <small class="text-muted">Balance</small><h3 class="mb-0">${{ balance }}</h3>
+      <small class="text-muted">Balance</small><h3 class="mb-0">${{ format_cop(balance) }}</h3>
     </div></div></div>
   </div>
 
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">Últimas transacciones</h5>
-                {% set labels_type = {
-                'income': 'Ingreso',
-                'expense': 'Gasto'
-                } %}
-      {% if last_transactions %}
-      <div class="table-responsive">
-        <table class="table mb-0">
-          <thead>
-            <tr>
-              <th>Fecha</th><th>Tipo</th><th>Monto</th><th>Notas</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for tx in last_transactions %}
-            <tr>
-              <td>{{ tx.date }}</td>
-              <td>{{ tx.type }}</td>
-              <td>${{ format_cop(tx.amount) }}</td>
-              <td class="text-muted">{{ tx.notes or "" }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% else %}
-      <p class="text-muted mb-0">Aún no tienes transacciones.</p>
-      {% endif %}
+    <h5 class="card-title">Últimas transacciones</h5>
+
+    {% set labels_type = {
+      'expense': 'Gasto',
+      'income': 'Ingreso'
+    } %}
+
+    {% if transactions %}
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Monto</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in transactions %}
+          <tr>
+            <td>{{ tx.date }}</td>
+            <td>{{ labels_type.get(tx.type, tx.type) }}</td>
+            <td>${{ format_cop(tx.amount) }}</td>
+            <td class="text-muted">{{ tx.notes or "" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted mb-0">Aún no tienes transacciones.</p>
+    {% endif %}
     </div>
   </div>
 </div>
