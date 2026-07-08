@@ -1,73 +1,103 @@
 # Project Multitarea
 
-Aplicacion web desarrollada con **Flask** para centralizar tareas personales en tres areas: seguimiento de contenido, habitos y finanzas. El proyecto usa una arquitectura modular con rutas separadas, modelos de base de datos, formularios protegidos con CSRF y vistas construidas con Bootstrap.
+Aplicación web desarrollada con **Flask** para centralizar la gestión de contenido multimedia, hábitos y finanzas personales en una sola plataforma.
+
+La aplicación implementa una arquitectura modular utilizando Blueprints, persistencia de datos mediante SQLAlchemy, migraciones con Flask-Migrate y una interfaz responsive desarrollada con Bootstrap.
 
 ---
 
-## Modulos principales
+## Vista previa
 
-- **Media:** registro de peliculas, series, musica, libros y juegos.
-- **Habitos:** seguimiento diario, rachas, metricas y visualizaciones.
-- **Finanzas:** registro de ingresos, gastos, categorias e historial.
+![Vista previa del proyecto](static/img/Captura-proyecto.png)
 
 ---
 
-## Tecnologias
+## Funcionalidades
 
-- Python 3
+### 🎬 Gestión de contenido
+
+- Registro de películas
+- Series
+- Libros
+- Música
+- Videojuegos
+- Calificaciones y estados
+
+### 📅 Seguimiento de hábitos
+
+- Registro diario
+- Rachas actuales
+- Mejor racha
+- Métricas
+- Gráficos con Chart.js
+
+### 💰 Finanzas personales
+
+- Registro de ingresos
+- Registro de gastos
+- Categorías
+- Historial
+- Balance
+
+---
+
+## Tecnologías
+
+### Backend
+
+- Python
 - Flask
 - Flask-SQLAlchemy
 - Flask-Migrate
 - Flask-WTF
+
+### Base de datos
+
+- SQLite
+- MySQL
 - PyMySQL
+
+### Frontend
+
+- HTML
+- CSS
 - Bootstrap 5
+- JavaScript
 - Chart.js
 
 ---
 
-## Requisitos previos
+## Instalación
 
-Antes de iniciar, asegurate de tener instalado:
-
-- Python 3.10 o superior
-- pip
-- Git
-- MySQL, solo si vas a usar una base de datos MySQL
-
-> Si solo quieres probar el proyecto rapido, puedes usar SQLite. No necesitas instalar MySQL para esa opcion.
-
----
-
-## Instalacion paso a paso
-
-### 1. Clonar el repositorio
+### Clonar el repositorio
 
 ```bash
 git clone https://github.com/SaGG77/Project-Multi.git
+
 cd Project-Multi
 ```
 
-### 2. Crear un entorno virtual
+### Crear entorno virtual
 
 ```bash
 python -m venv .venv
 ```
 
-Activar el entorno virtual:
-
-**Windows PowerShell**
+Windows
 
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-**Linux / macOS**
+Linux / macOS
 
 ```bash
 source .venv/bin/activate
 ```
 
-### 3. Instalar dependencias
+---
+
+### Instalar dependencias
 
 ```bash
 pip install -r requirements.txt
@@ -75,131 +105,89 @@ pip install -r requirements.txt
 
 ---
 
-## Configuracion de base de datos
+## Configuración
 
-El proyecto lee la conexion desde la variable `DATABASE_URL`.
+El proyecto obtiene la configuración desde un archivo `.env`.
 
-Si no configuras esta variable, Flask usara SQLite por defecto con este valor:
-
-```env
-sqlite:///app.db
-```
-
-### Opcion A: usar SQLite
-
-Esta es la forma mas sencilla para probar el proyecto localmente.
-
-Crea un archivo `.env` en la raiz del proyecto:
-
-```env
-FLASK_SECRET_KEY=una_clave_secreta_para_desarrollo
-DATABASE_URL=sqlite:///app.db
-```
-
-Con esta opcion, la base de datos queda como un archivo local llamado `app.db`.
-
-### Opcion B: usar MySQL
-
-1. Crea una base de datos en MySQL:
-
-```sql
-CREATE DATABASE project_multi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-2. Crea o edita el archivo `.env`:
-
-```env
-FLASK_SECRET_KEY=una_clave_secreta_para_desarrollo
-DATABASE_URL=mysql+pymysql://usuario:contraseña@localhost/project_multi
-```
+Si no existe, utilizará SQLite por defecto.
 
 Ejemplo:
 
 ```env
-DATABASE_URL=mysql+pymysql://root:123456@localhost/project_multi
-```
+FLASK_SECRET_KEY=tu_clave_secreta
 
-> Si tu contraseña tiene simbolos especiales como `@`, `#` o `%`, puede ser necesario codificarla para que la URL funcione correctamente.
+DATABASE_URL=sqlite:///app.db
+```
 
 ---
 
-## Crear o actualizar las tablas
+## Base de datos
 
-Despues de configurar la base de datos, ejecuta las migraciones.
-
-Si el proyecto todavia no tiene carpeta `migrations`, inicia Flask-Migrate:
-
-```bash
-flask --app app db init
-```
-
-Luego crea la migracion inicial:
-
-```bash
-flask --app app db migrate -m "initial database"
-```
-
-Aplica los cambios a la base de datos:
+Para crear todas las tablas ejecuta:
 
 ```bash
 flask --app app db upgrade
 ```
 
-> Si la carpeta `migrations` ya existe, no repitas `flask --app app db init`. Solo ejecuta `migrate` y `upgrade` cuando cambien los modelos.
+Si deseas utilizar MySQL, crea una base de datos y modifica la variable `DATABASE_URL`:
+
+```env
+DATABASE_URL=mysql+pymysql://usuario:contraseña@localhost/project_multi
+```
 
 ---
 
-## Ejecutar la aplicacion
+## Ejecutar la aplicación
 
 ```bash
 python run.py
 ```
 
-Abre el navegador en:
+Después abre:
 
-```text
+```
 http://127.0.0.1:5000
 ```
 
 ---
 
-## Estructura general
+## Estructura
 
 ```text
 Project-Multi/
-├── app.py
-├── run.py
-├── extensions.py
-├── forms.py
+│
+├── assets/
 ├── models/
 ├── routes/
-├── templates/
 ├── static/
-└── utils/
+├── templates/
+├── utils/
+│
+├── migrations/
+│
+├── app.py
+├── extensions.py
+├── forms.py
+├── run.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Problemas comunes
+## Tecnologías utilizadas
 
-### No se conecta a la base de datos
-
-Revisa que `DATABASE_URL` este bien escrito en `.env` y que el servidor de MySQL este encendido si usas MySQL.
-
-### No reconoce el comando `flask`
-
-Verifica que el entorno virtual este activado y que las dependencias esten instaladas.
-
-### Error al importar paquetes
-
-Ejecuta nuevamente:
-
-```bash
-pip install -r requirements.txt
-```
+- Flask
+- SQLAlchemy
+- Flask-Migrate
+- Flask-WTF
+- Bootstrap
+- Chart.js
+- SQLite
+- MySQL
 
 ---
 
 ## Autor
 
-Samuel Guevara
+**Samuel Guevara**
