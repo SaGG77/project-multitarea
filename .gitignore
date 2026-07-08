@@ -11,5 +11,3 @@ __pycache__/
 notillas.txt
 # Base de datos local (si usas sqlite)
 *.db
-/migrations
-templates/perfil.html
